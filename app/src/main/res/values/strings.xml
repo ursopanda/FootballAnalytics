@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Football Analitics</string>
+    <string name="title_activity_view_championship_table">ViewChampionshipTable</string>
+</resources>
