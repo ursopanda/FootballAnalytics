@@ -22,7 +22,6 @@ import java.util.Map;
 import androidsqlite.DatabaseHandler;
 import androidsqlite.Referee;
 import androidsqlite.Team;
-import jsonparser.JSONParser;
 
 public class Main2Activity extends ListActivity {
 
