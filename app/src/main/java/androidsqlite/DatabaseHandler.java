@@ -47,9 +47,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Table Teams Create Statement
     private static final String CREATE_TABLE_TEAMS = "CREATE TABLE "
             + TABLE_TEAMS + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-            + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," +
-            KEY_WIN_AMOUNTS + " INTEGER" + KEY_LOSE_AMOUNTS + " INTEGER" +
-            KEY_GOALS + " INTEGER" + KEY_POINTS + " INTEGER" + ")";
+            + KEY_NAME + " TEXT," + KEY_WIN_AMOUNTS + " INTEGER,"
+            + KEY_LOSE_AMOUNTS + " INTEGER," + KEY_GOALS + " INTEGER," + KEY_POINTS + " INTEGER" + ")";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -63,12 +62,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_REFEREES);
     }
 
+    // Delete DB
+    public  void deleteFootballStats() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_TEAMS, null, null);
+        db.delete(TABLE_REFEREES, null, null);
+        db.close();
+    }
+
     // Upgrading DB
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table version, if exists
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEAMS);
-        db.execSQL("DROP TABLE if EXISTS " + TABLE_REFEREES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REFEREES);
         // create tables again
         onCreate(db);
     }

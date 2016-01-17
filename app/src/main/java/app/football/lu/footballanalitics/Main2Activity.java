@@ -16,9 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import androidsqlite.DatabaseHandler;
 import androidsqlite.Referee;
+import androidsqlite.Team;
 
 public class Main2Activity extends ListActivity {
 
@@ -52,8 +55,13 @@ public class Main2Activity extends ListActivity {
         setContentView(R.layout.activity_main2);
 
         DatabaseHandler db = new DatabaseHandler(this);
+        // Cleaning from old entries
+        db.deleteFootballStats();
 
-        contactList = new ArrayList<HashMap<String, String>>();
+//        contactList = new ArrayList<HashMap<String, String>>();
+//        Map teamMap = new HashMap<>();
+        Map<String, Integer> teamMap = new HashMap<>();
+        boolean isExtraPeriod = false;
 
         ListView lv = getListView();
 
@@ -153,19 +161,65 @@ public class Main2Activity extends ListActivity {
                     for (int i = 0; i < teams.length(); i++) {
                         // Getting information on teams
                         JSONObject team = teams.getJSONObject(i);
-                        String teamName = team.getString("Nosaukums");
+                        JSONObject goals = team.getJSONObject("Varti");
+                        JSONArray goal = goals.getJSONArray("VG");
+                        for (int g = 0; g < goal.length(); g++) {
+                            JSONObject currentGoal = goal.getJSONObject(g);
+                            String goalTime = currentGoal.get("Laiks").toString().replaceAll(":", "");
+                            if (Integer.parseInt(goalTime) > 6000) {
+                                isExtraPeriod = true;
+                                break;
+                            }
+                        }
+                        // Getting HashMap: TeamName -> Goals
+                        teamMap.put(team.getString("Nosaukums"), goal.length());
 
                         // Getting information on cards
                         JSONObject cardObject = team.getJSONObject("Sodi");
-                        JSONArray cards = cardObject.getJSONArray("Sods");
-                        cardNumber += cards.length();
+                        try {
+                            JSONArray cards = cardObject.getJSONArray("Sods");
+                            cardNumber += cards.length();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            cardNumber++;
+                        }
                     }
+
+                    // Game analytics - getting info on winner/loser
+                    Map.Entry<String,Integer> entry=teamMap.entrySet().iterator().next();
+                    String key1 = entry.getKey();
+                    String value1 = entry.getValue().toString();
+                    String key2 = teamMap.entrySet().iterator().next().getKey();
+                    String value2 = teamMap.entrySet().iterator().next().getValue().toString();
+
+                    if (Integer.parseInt(value1) > Integer.parseInt(value2)) {
+                        if (!isExtraPeriod) {
+                            db.addTeam(new Team(key1, 1, 0, Integer.parseInt(value1), 5));
+                            db.addTeam(new Team(key2, 0, 1, Integer.parseInt(value2), 1));
+                        }
+                        else {
+                            db.addTeam(new Team(key1, 1, 0, Integer.parseInt(value1), 3));
+                            db.addTeam(new Team(key1, 0, 1, Integer.parseInt(value2), 2));
+                        }
+                    }
+                    else {
+                        if (!isExtraPeriod) {
+                            db.addTeam(new Team(key2, 1, 0, Integer.parseInt(value2), 5));
+                            db.addTeam(new Team(key1, 0, 1, Integer.parseInt(value1), 1));
+                        }
+                        else {
+                            db.addTeam(new Team(key2, 1, 0, Integer.parseInt(value2), 3));
+                            db.addTeam(new Team(key1, 0, 1, Integer.parseInt(value1), 2));
+                        }
+                    }
+
                     // Gathering info about referee
                     JSONObject referee = spele.getJSONObject("VT");
                     // Putting Referee into the DB
-                    if (!db.checkIsDataAlreadyInDBorNot("referees","name",referee.getString("Vards"))
-                            && (!db.checkIsDataAlreadyInDBorNot("referees","surname",referee.getString("Surname"))))
-                        db.addReferee(new Referee(referee.getString("Vards"),referee.getString("Surname"), cardNumber, 1));
+//                    if (!db.checkIsDataAlreadyInDBorNot("referees","name",referee.getString("Vards"))
+//                            && (!db.checkIsDataAlreadyInDBorNot("referees","surname",referee.getString("Surname"))))
+                        db.addReferee(new Referee(referee.getString("Vards"),referee.getString("Uzvards"), cardNumber, 1));
+                        db.getAllReferees();
                     // If the following referee exists in DB
 //                    else
 //                        db.updateReferee()
