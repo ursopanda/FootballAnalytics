@@ -1,7 +1,10 @@
 package app.football.lu.footballanalitics;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import java.util.List;
 
@@ -18,5 +21,8 @@ public class ViewChampionshipTable extends AppCompatActivity {
         DatabaseHandler db = new DatabaseHandler(this);
 
         List<Team> teamsList = db.getAllTeams();
+
+
+
     }
 }
