@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initializing method to parse JSON file
         readJSON("futbols0.json");
+        readJSON("futbols1.json");
 
         // Turnira tabula
         final Button tabulaPoga = (Button) findViewById(R.id.tabulaPoga);
@@ -270,7 +271,8 @@ public class MainActivity extends AppCompatActivity {
 //                    if (!db.checkIsDataAlreadyInDBorNot("referees","name",referee.getString("Vards"))
 //                            && (!db.checkIsDataAlreadyInDBorNot("referees","surname",referee.getString("Surname"))))
                 db.addReferee(new Referee(referee.getString("Vards"),referee.getString("Uzvards"), cardNumber, 1));
-                db.getAllReferees();
+//                db.getAllReferees();
+                db.getAllTeams();
                 // If the following referee exists in DB
 //                    else
 //                        db.updateReferee()

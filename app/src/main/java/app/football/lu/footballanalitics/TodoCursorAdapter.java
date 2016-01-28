@@ -56,18 +56,6 @@ public class TodoCursorAdapter extends CursorAdapter {
         goals.setText(String.valueOf(goalsAmount));
         points.setText(String.valueOf(pointsAmount));
 
-        // TodoDatabaseHandler is a SQLiteOpenHelper class connecting to SQLite
-        DatabaseHandler handler = new DatabaseHandler(context);
-        // Get access to the underlying writeable database
-        SQLiteDatabase db = handler.getWritableDatabase();
-        // Query for items from the database and get a cursor back
-        Cursor todoCursor = db.rawQuery("SELECT  * FROM teams", null);
 
-//        // Find ListView to populate
-//        ListView lvItems = (ListView) find
-//// Setup cursor adapter using cursor from last step
-//        TodoCursorAdapter todoAdapter = new TodoCursorAdapter(co, todoCursor);
-//// Attach cursor adapter to the ListView
-//        lvItems.setAdapter(todoAdapter);
     }
 }
